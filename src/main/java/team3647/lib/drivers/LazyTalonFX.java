@@ -1,11 +1,13 @@
 package team3647.lib.drivers;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 /**
- * This class is a thin wrapper around the CANTalon that reduces CAN bus / CPU overhead by skipping
- * duplicate set commands. (By default the Talon flushes the Tx buffer on every set call).
+ * This class is a thin wrapper around the CANTalon that reduces CAN bus / CPU
+ * overhead by skipping
+ * duplicate set commands. (By default the Talon flushes the Tx buffer on every
+ * set call).
  */
 public class LazyTalonFX extends TalonFX {
     protected double mLastSet = Double.NaN;

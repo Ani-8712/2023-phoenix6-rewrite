@@ -1,9 +1,10 @@
 package team3647.frc2023.constants;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+// import com.ctre.phoenix.motorcontrol.InvertType;
+// import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 
@@ -11,21 +12,21 @@ public class ExtenderConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.ExtenderIds.kMasterId);
 
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
-    public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
+    public static final boolean kMasterInvert = true;
 
     public static final double kRevTicksSoftLimit = 2000;
 
     private static final double kGearBoxRatio = 14.0 / 48.0 * 30.0 / 40.0 * 18.0 / 24.0;
     private static final double kDrumDiameterMeters = Units.inchesToMeters(1.2);
 
-    public static final double kOutputRotationMeters =
-            kDrumDiameterMeters * Math.PI * kGearBoxRatio;
+    public static final double kOutputRotationMeters = kDrumDiameterMeters * Math.PI * kGearBoxRatio;
     public static final double kNativePosToMeters = 1;
     // kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
     public static final double kNativeVelToMpS = 10 * kNativePosToMeters;
 
-    public static final double kMaxVelocityTicks = 30000.0 * 3.0;
-    public static final double kMaxAccelerationTicks = 30000.0 * 3.0;
+    public static final double kMaxVelocityMotorRotations = (30000.0 * 3.0) / GlobalConstants.kFalconTicksPerRotation;
+    public static final double kMaxAccelerationMotorRotations = (30000.0 * 3.0)
+            / GlobalConstants.kFalconTicksPerRotation;
 
     public static final double kMinimumPositionTicks = 2000;
     public static final double kMaximumPositionTicks = 56000.0;
@@ -54,24 +55,24 @@ public class ExtenderConstants {
     public static final double kDoubleStation = 8600;
 
     static {
-        kMaster.configFactoryDefault();
+        kMaster.getConfigurator().apply(kMasterConfig);
 
-        kMasterConfig.slot0.kP = kP;
-        kMasterConfig.slot0.kI = kI;
-        kMasterConfig.slot0.kD = kD;
-        kMasterConfig.motionAcceleration = kMaxVelocityTicks;
-        kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
-        kMasterConfig.voltageCompSaturation = nominalVoltage;
-        kMasterConfig.slot0.allowableClosedloopError = 1000;
+        kMasterConfig.Slot0.kP = kP;
+        kMasterConfig.Slot0.kI = kI;
+        kMasterConfig.Slot0.kD = kD;
+        kMasterConfig.MotionMagic.MotionMagicAcceleration = kMaxVelocityMotorRotations;
+        kMasterConfig.MotionMagic.MotionMagicCruiseVelocity = kMaxAccelerationMotorRotations;
+        // kMasterConfig.voltageCompSaturation = nominalVoltage;
+        // kMasterConfig.slot0.allowableClosedloopError = 1000;
 
-        kMasterConfig.peakOutputReverse = -0.7;
+        kMasterConfig.MotorOutput.PeakReverseDutyCycle = -0.7;
 
-        kMasterConfig.reverseSoftLimitEnable = true;
-        kMasterConfig.reverseSoftLimitThreshold = kRevTicksSoftLimit;
+        kMasterConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        kMasterConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kRevTicksSoftLimit;
 
-        kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
+        kMasterConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        kMaster.getConfigurator().apply(kMasterConfig, GlobalConstants.kTimeoutMS / 1000);
         kMaster.setInverted(kMasterInvert);
-        kMaster.enableVoltageCompensation(true);
-        kMaster.setNeutralMode(NeutralMode.Brake);
+        // kMaster.enableVoltageCompensation(true);
     }
 }
